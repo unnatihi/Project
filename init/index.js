@@ -1,20 +1,27 @@
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
 const initData = require("./data.js");
-const listing = require("../models/listing.js");
+const Listing = require("../models/listing.js");
 
-async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/wanderlust");
-}
+const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+
 main()
   .then(() => {
-    console.log("connect to mongoose");
+    console.log("connected to DB");
+    // Call initDB to reinitialize data after connecting to the database
+    initDB();
   })
-  .catch((err) => console.log(err));
+  .catch((err) => {
+    console.log(err);
+  });
 
-const initdb = async () => {
-  await listing.deleteMany({});
-  await listing.insertMany(initData.data);
-  console.log("data initialized");
+async function main() {
+  await mongoose.connect(MONGO_URL);
+}
+
+const initDB = async () => {
+  // Remove all documents from the Listing model
+  await Listing.deleteMany({});
+  // Insert new data from initData.data
+  await Listing.insertMany(initData.data);
+  console.log("Data was reinitialized");
 };
-
-initdb();
